@@ -1,0 +1,48 @@
+    .text                       ; Text (code) section
+    .global main                ; Declare main as global symbol
+
+main:
+    ; Stop the watchdog timer
+    MOV.W   #WDTPW|WDTHOLD, &WDTCTL   ; Stop the watchdog timer by writing to WDTCTL
+
+    ; Initialize 'a' to 32 (int a = 32)
+    MOV.W   #32, R4                ; Load immediate value 32 into register R4 (which we'll use for variable 'a')
+
+    ; Initialize 'b' (uninitialized, so skip for now)
+    ; Variable b is later assigned in the division process
+
+    ; Initialize 'c' to 0xFFFF (unsigned int c = 0xFFFF)
+    MOV.W   #0xFFFF, R5            ; Load 0xFFFF into R5 (unsigned integer 'c')
+
+    ; Initialize 'd' to 0x00 (unsigned char d = 0x00)
+    MOV.B   #0x00, R6              ; Load 0 into R6 (unsigned char 'd')
+
+    ; Initialize 'e' to 10 (int e = 10)
+    MOV.W   #10, R7                ; Load 10 into R7 (integer 'e')
+
+    ; Initialize 'f' to 10.1 (float f = 10.1)
+    ; Floating point numbers require software libraries for the MSP430 since it lacks hardware support
+    ; We'll load this into the appropriate registers for now, but MSP430 doesn't handle floats natively
+    MOVA    #0x4121999A, R8        ; 0x4121999A represents 10.1 in IEEE 754 float format, move it into R8
+
+    ; Initialize 'g' to 0 (int g = 0)
+    MOV.W   #0, R9                 ; Load 0 into R9 (integer 'g')
+
+    ; Initialize 'h' to 0.0 (float h = 0.0)
+    MOVA    #0x00000000, R10       ; 0.0 in IEEE 754 float format is all zeros, move to R10
+
+    ; a += 1;
+    ADD.W   #1, R4                 ; Add 1 to 'a' (R4)
+
+    ; b = 17 / 2;
+    MOV.W   #17, R11               ; Move 17 into R11 (temporary register for dividend)
+    MOV.W   #2, R12                ; Move 2 into R12 (temporary register for divisor)
+    DIV.W   R12, R11               ; Divide R11 by R12 (17 / 2)
+    MOV.W   R11, R13               ; Move result (8) into register for 'b' (R13)
+
+main_loop:
+    ; Infinite loop
+    NOP                            ; No operation, placeholder
+    JMP main_loop                  ; Jump to main_loop, creating an infinite loop
+
+    .end
